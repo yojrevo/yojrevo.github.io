@@ -245,7 +245,7 @@ $(function () {
           const $this = $(this)
           const $table = $this.parent().nextAll()
           $this.toggleClass('closed')
-          $table.is(':visible') ? $table.css('display', 'none') : $table.css('display', 'block')
+          $table.is(':visible') ? $table.css('display', 'block')
         })
       }
 
